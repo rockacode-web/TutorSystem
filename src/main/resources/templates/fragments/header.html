@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<header class="site-header" th:fragment="siteHeader">
+    <div class="container site-header-inner">
+        <div>
+            <p class="site-kicker">Academic Support</p>
+            <a class="site-title" th:href="@{/}" href="/">Academic Tutoring Portal</a>
+        </div>
+        <nav class="site-nav" aria-label="Primary navigation">
+            <a th:href="@{/}" href="/">Home</a>
+            <a th:href="@{/student/book}" href="/student/book">Book Session</a>
+            <a th:href="@{/tutor/schedule(tutorId=1)}" href="/tutor/schedule?tutorId=1">Tutor Schedule</a>
+        </nav>
+    </div>
+</header>
+</body>
+</html>

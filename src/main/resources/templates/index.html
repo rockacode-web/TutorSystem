@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Academic Tutoring Portal</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: siteHeader}"></div>
+    <main class="page-main">
+        <div class="container">
+            <section class="page-shell">
+                <header class="page-header">
+                    <h1>Academic Tutoring Portal</h1>
+                    <p>Schedule and manage tutoring sessions through a single, structured portal for students and tutors.</p>
+                </header>
+                <section class="hero-grid" aria-label="Primary actions">
+                    <article class="hero-panel">
+                        <h2>Book a Tutoring Session</h2>
+                        <p>View currently available tutoring slots and submit a booking request using the student workflow.</p>
+                        <div class="button-row">
+                            <a class="button" th:href="@{/student/book}" href="/student/book">Book Session</a>
+                        </div>
+                    </article>
+                    <article class="hero-panel">
+                        <h2>Manage Tutor Schedule</h2>
+                        <p>Review booked sessions, update the scheduled time, and cancel sessions that should remain on record.</p>
+                        <div class="button-row">
+                            <a class="button button-secondary" th:href="@{/tutor/schedule(tutorId=1)}" href="/tutor/schedule?tutorId=1">Tutor Schedule</a>
+                        </div>
+                    </article>
+                </section>
+            </section>
+        </div>
+    </main>
+    <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>

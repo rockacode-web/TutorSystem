@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Manage Schedule</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: siteHeader}"></div>
+    <main class="page-main">
+        <div class="container">
+            <section class="page-shell">
+                <header class="page-header">
+                    <h1>Manage Tutor Schedule</h1>
+                    <p>Review booked tutoring sessions, update upcoming session times, and keep cancelled sessions visible as part of the schedule record.</p>
+                </header>
+
+                <section class="flash-messages" th:if="${successMessage != null or errorMessage != null}">
+                    <p class="flash-message flash-success" th:if="${successMessage}" th:text="${successMessage}">Action completed successfully.</p>
+                    <p class="flash-message flash-error" th:if="${errorMessage}" th:text="${errorMessage}">Action failed.</p>
+                </section>
+
+                <section class="form-panel">
+                    <h2>Add New Available Slot</h2>
+                    <form class="slot-create-form" th:action="@{/tutor/slot/create}" action="/tutor/slot/create" method="post">
+                        <input type="hidden" name="tutorId" th:value="${tutorId}" />
+                        <label>
+                            Date
+                            <input type="date" name="date" required />
+                        </label>
+                        <label>
+                            Start Time
+                            <input type="time" name="startTime" required />
+                        </label>
+                        <label>
+                            End Time
+                            <input type="time" name="endTime" required />
+                        </label>
+                        <button type="submit">Add Slot</button>
+                    </form>
+                </section>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Current Date</th>
+                            <th>Current Start Time</th>
+                            <th>Current End Time</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="tutoringSession : ${sessions}"
+                            th:classappend="${tutoringSession.status.name() == 'CANCELLED'} ? 'row-cancelled'">
+                            <td th:text="${tutoringSession.student.name}">Student Name</td>
+                            <td th:text="${tutoringSession.date}">Date</td>
+                            <td th:text="${tutoringSession.startTime}">Start Time</td>
+                            <td th:text="${tutoringSession.endTime}">End Time</td>
+                            <td>
+                                <span class="status-badge"
+                                      th:classappend="${tutoringSession.status.name() == 'BOOKED'} ? ' status-booked' :
+                                      (${tutoringSession.status.name() == 'CANCELLED'} ? ' status-cancelled' : ' status-completed')"
+                                      th:text="${tutoringSession.status}">Status</span>
+                            </td>
+                            <td>
+                                <div class="session-actions">
+                                    <form class="inline-form" th:action="@{/tutor/schedule/update}" action="/tutor/schedule/update" method="post">
+                                        <input type="hidden" name="sessionId" th:value="${tutoringSession.id}" />
+                                        <input type="hidden" name="tutorId" th:value="${tutorId}" />
+                                        <label>
+                                            New Date
+                                            <input type="date" name="newDate" th:value="${tutoringSession.date}"
+                                                   th:disabled="${tutoringSession.status.name() == 'CANCELLED'}" />
+                                        </label>
+                                        <label>
+                                            New Start Time
+                                            <input type="time" name="newStartTime" th:value="${tutoringSession.startTime}"
+                                                   th:disabled="${tutoringSession.status.name() == 'CANCELLED'}" />
+                                        </label>
+                                        <label>
+                                            New End Time
+                                            <input type="time" name="newEndTime" th:value="${tutoringSession.endTime}"
+                                                   th:disabled="${tutoringSession.status.name() == 'CANCELLED'}" />
+                                        </label>
+                                        <button type="submit" th:disabled="${tutoringSession.status.name() == 'CANCELLED'}">Update Session</button>
+                                    </form>
+
+                                    <form th:if="${tutoringSession.status.name() != 'CANCELLED'}"
+                                          th:action="@{/tutor/schedule/cancel}" action="/tutor/schedule/cancel" method="post">
+                                        <input type="hidden" name="sessionId" th:value="${tutoringSession.id}" />
+                                        <input type="hidden" name="tutorId" th:value="${tutorId}" />
+                                        <button class="button-secondary" type="submit">Cancel Session</button>
+                                    </form>
+
+                                    <p class="muted-note" th:if="${tutoringSession.status.name() == 'CANCELLED'}">Cancelled session. No further edits allowed.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+    <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>

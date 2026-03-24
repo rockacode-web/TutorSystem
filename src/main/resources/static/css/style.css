@@ -1,0 +1,375 @@
+:root {
+    --page-bg: #f4f7fb;
+    --surface: #ffffff;
+    --surface-muted: #eef3f9;
+    --border: #d3dce8;
+    --text: #213044;
+    --text-soft: #5b6b80;
+    --primary: #1f4f82;
+    --primary-dark: #173c62;
+    --success-bg: #e7f6ec;
+    --success-text: #1f5c32;
+    --success-border: #b8dfc3;
+    --error-bg: #fdeceb;
+    --error-text: #8f2d2d;
+    --error-border: #f1b8b5;
+    --booked-bg: #e7f0fb;
+    --booked-text: #1d4d80;
+    --cancelled-bg: #f1f3f5;
+    --cancelled-text: #5a6470;
+    --shadow: 0 10px 25px rgba(31, 49, 73, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    background: var(--page-bg);
+    color: var(--text);
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    width: min(1100px, calc(100% - 2rem));
+    margin: 0 auto;
+}
+
+.site-header {
+    background: linear-gradient(135deg, #173c62, #245d95);
+    color: #ffffff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.site-header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.2rem 0;
+}
+
+.site-kicker {
+    margin: 0 0 0.25rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.site-title {
+    color: #ffffff;
+    font-size: 1.7rem;
+    font-weight: 700;
+}
+
+.site-title:hover {
+    text-decoration: none;
+}
+
+.site-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.site-nav a {
+    display: inline-block;
+    padding: 0.65rem 1rem;
+    border-radius: 999px;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+    font-weight: 600;
+}
+
+.site-nav a:hover {
+    background: rgba(255, 255, 255, 0.22);
+    text-decoration: none;
+}
+
+.page-main {
+    padding: 2rem 0 3rem;
+}
+
+.page-shell {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    padding: 2rem;
+}
+
+.page-header {
+    margin-bottom: 1.5rem;
+}
+
+.page-header h1 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.9rem, 3vw, 2.5rem);
+}
+
+.page-header p {
+    margin: 0;
+    color: var(--text-soft);
+}
+
+.hero-grid,
+.card-grid {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.hero-panel,
+.action-card,
+.confirmation-card,
+.empty-state,
+.form-panel {
+    background: var(--surface-muted);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+}
+
+.hero-panel h2,
+.action-card h2,
+.confirmation-card h2,
+.empty-state h2,
+.form-panel h2 {
+    margin-top: 0;
+}
+
+.hero-panel p,
+.action-card p,
+.confirmation-card p,
+.empty-state p,
+.form-panel p {
+    color: var(--text-soft);
+}
+
+.form-panel {
+    margin-bottom: 1.5rem;
+}
+
+.slot-create-form {
+    display: grid;
+    gap: 0.9rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    align-items: end;
+}
+
+.slot-create-form label {
+    display: grid;
+    gap: 0.3rem;
+    color: var(--text-soft);
+    font-size: 0.92rem;
+}
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.button,
+button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.75rem 1.15rem;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: var(--primary);
+    color: #ffffff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.button:hover,
+button:hover {
+    background: var(--primary-dark);
+    text-decoration: none;
+}
+
+.button-secondary {
+    background: #ffffff;
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.button-secondary:hover {
+    background: #edf4fb;
+}
+
+button:disabled,
+.button:disabled {
+    background: #c7d1dc;
+    color: #6c7887;
+    cursor: not-allowed;
+}
+
+.flash-messages {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.flash-message {
+    margin: 0;
+    padding: 0.9rem 1rem;
+    border: 1px solid;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.flash-success {
+    background: var(--success-bg);
+    border-color: var(--success-border);
+    color: var(--success-text);
+}
+
+.flash-error {
+    background: var(--error-bg);
+    border-color: var(--error-border);
+    color: var(--error-text);
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+}
+
+th,
+td {
+    padding: 1rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border);
+}
+
+thead th {
+    background: #e9f0f8;
+    color: var(--text);
+    font-size: 0.95rem;
+}
+
+tbody tr:nth-child(even) {
+    background: #fbfcfe;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.session-actions {
+    display: grid;
+    gap: 0.9rem;
+    min-width: 250px;
+}
+
+.inline-form {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.inline-form label {
+    display: grid;
+    gap: 0.3rem;
+    color: var(--text-soft);
+    font-size: 0.92rem;
+}
+
+input[type="date"],
+input[type="time"] {
+    width: 100%;
+    min-height: 42px;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #ffffff;
+    color: var(--text);
+    font: inherit;
+}
+
+input:disabled {
+    background: #eef1f4;
+    color: #687383;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.status-booked {
+    background: var(--booked-bg);
+    color: var(--booked-text);
+}
+
+.status-cancelled {
+    background: var(--cancelled-bg);
+    color: var(--cancelled-text);
+}
+
+.status-completed {
+    background: #e8f3ed;
+    color: #256043;
+}
+
+.row-cancelled {
+    opacity: 0.85;
+}
+
+.muted-note {
+    margin: 0;
+    color: var(--text-soft);
+    font-size: 0.92rem;
+}
+
+.site-footer {
+    padding: 1.5rem 0 2.5rem;
+    color: var(--text-soft);
+    text-align: center;
+}
+
+@media (max-width: 720px) {
+    .site-header-inner {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .page-shell {
+        padding: 1.35rem;
+    }
+
+    th,
+    td {
+        padding: 0.8rem;
+    }
+}

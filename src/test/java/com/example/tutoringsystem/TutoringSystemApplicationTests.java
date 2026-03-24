@@ -1,0 +1,13 @@
+package com.example.tutoringsystem;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class TutoringSystemApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
+
+}

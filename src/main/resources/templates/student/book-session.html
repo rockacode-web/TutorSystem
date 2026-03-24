@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Book Session</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: siteHeader}"></div>
+    <main class="page-main">
+        <div class="container">
+            <section class="page-shell">
+                <header class="page-header">
+                    <h1>Book a Tutoring Session</h1>
+                    <p>Review the current tutoring slots below and choose an available time that fits your schedule.</p>
+                </header>
+
+                <section class="flash-messages" th:if="${successMessage != null or errorMessage != null}">
+                    <p class="flash-message flash-success" th:if="${successMessage}" th:text="${successMessage}">Booking success message</p>
+                    <p class="flash-message flash-error" th:if="${errorMessage}" th:text="${errorMessage}">Booking error message</p>
+                </section>
+
+                <section th:if="${#lists.isEmpty(slots)}" class="empty-state">
+                    <h2>No Slots Available</h2>
+                    <p>No tutoring slots are currently available. Please check back later.</p>
+                </section>
+
+                <section th:unless="${#lists.isEmpty(slots)}">
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Tutor Name</th>
+                                <th>Date</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="slot : ${slots}">
+                                <td th:text="${slot.tutor.name}">Tutor Name</td>
+                                <td th:text="${slot.date}">Date</td>
+                                <td th:text="${slot.startTime}">Start Time</td>
+                                <td th:text="${slot.endTime}">End Time</td>
+                                <td>
+                                    <form th:action="@{/student/book}" action="/student/book" method="post">
+                                        <input type="hidden" name="studentId" value="1" />
+                                        <input type="hidden" name="slotId" th:value="${slot.id}" />
+                                        <button type="submit">Book Session</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+        </div>
+    </main>
+    <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>

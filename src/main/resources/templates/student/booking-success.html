@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Booking Success</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: siteHeader}"></div>
+    <main class="page-main">
+        <div class="container">
+            <section class="page-shell">
+                <header class="page-header">
+                    <h1>Booking Confirmed</h1>
+                    <p>Your tutoring session has been recorded successfully.</p>
+                </header>
+
+                <section class="confirmation-card">
+                    <h2>Confirmation Details</h2>
+                    <p class="flash-message flash-success" th:if="${successMessage}" th:text="${successMessage}">Booking successful</p>
+                    <p th:if="${sessionId}">
+                        Session ID:
+                        <strong th:text="${sessionId}">1</strong>
+                    </p>
+                    <div class="button-row">
+                        <a class="button" th:href="@{/student/book}" href="/student/book">Book Another Session</a>
+                        <a class="button button-secondary" th:href="@{/}" href="/">Return Home</a>
+                    </div>
+                </section>
+            </section>
+        </div>
+    </main>
+    <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>
