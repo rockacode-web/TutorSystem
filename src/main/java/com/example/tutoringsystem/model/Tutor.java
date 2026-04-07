@@ -14,13 +14,16 @@ public class Tutor {
 
     private String name;
 
+    private String email;
+
     private String subject;
 
     public Tutor() {
     }
 
-    public Tutor(String name, String subject) {
+    public Tutor(String name, String email, String subject) {
         this.name = name;
+        this.email = email;
         this.subject = subject;
     }
 
@@ -46,5 +49,13 @@ public class Tutor {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

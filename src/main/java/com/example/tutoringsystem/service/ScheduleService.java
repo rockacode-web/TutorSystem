@@ -60,13 +60,9 @@ public class ScheduleService {
     }
 
     // MVP state rule: BOOKED -> CANCELLED is allowed, and cancelled sessions remain visible for history.
-    public TutoringSession cancelSession(Long sessionId) {
-        logger.info("cancelSession entered: sessionId={}", sessionId);
-        TutoringSession tutoringSession = tutoringSessionRepository.findById(sessionId)
-                .orElseThrow(() -> {
-                    logger.warn("cancelSession session not found: sessionId={}", sessionId);
-                    return new RuntimeException("Tutoring session not found with id: " + sessionId);
-                });
+    public TutoringSession cancelSession(Long sessionId, Long tutorId) {
+        logger.info("cancelSession entered: sessionId={}, tutorId={}", sessionId, tutorId);
+        TutoringSession tutoringSession = getTutorSession(sessionId, tutorId, "cancelSession");
 
         logger.info("cancelSession session found: sessionId={}, oldStatus={}", sessionId, tutoringSession.getStatus());
         tutoringSession.setStatus(SessionStatus.CANCELLED);
@@ -77,14 +73,10 @@ public class ScheduleService {
     }
 
     // MVP state rule: CANCELLED sessions cannot have date/time updated; a future flow can handle reschedule/reactivate.
-    public TutoringSession updateSession(Long sessionId, LocalDate newDate, LocalTime newStartTime,
+    public TutoringSession updateSession(Long sessionId, Long tutorId, LocalDate newDate, LocalTime newStartTime,
             LocalTime newEndTime) {
-        logger.info("updateSession entered: sessionId={}", sessionId);
-        TutoringSession tutoringSession = tutoringSessionRepository.findById(sessionId)
-                .orElseThrow(() -> {
-                    logger.warn("updateSession session not found: sessionId={}", sessionId);
-                    return new RuntimeException("Tutoring session not found with id: " + sessionId);
-                });
+        logger.info("updateSession entered: sessionId={}, tutorId={}", sessionId, tutorId);
+        TutoringSession tutoringSession = getTutorSession(sessionId, tutorId, "updateSession");
 
         logger.info("updateSession session found: sessionId={}, oldDate={}, oldStartTime={}, oldEndTime={}",
                 sessionId, tutoringSession.getDate(), tutoringSession.getStartTime(), tutoringSession.getEndTime());
@@ -103,5 +95,20 @@ public class ScheduleService {
         TutoringSession savedSession = tutoringSessionRepository.save(tutoringSession);
         logger.info("updateSession save completed: sessionId={}", sessionId);
         return savedSession;
+    }
+
+    private TutoringSession getTutorSession(Long sessionId, Long tutorId, String operation) {
+        TutoringSession tutoringSession = tutoringSessionRepository.findById(sessionId)
+                .orElseThrow(() -> {
+                    logger.warn("{} session not found: sessionId={}", operation, sessionId);
+                    return new RuntimeException("Tutoring session not found with id: " + sessionId);
+                });
+
+        if (!tutoringSession.getTutor().getId().equals(tutorId)) {
+            logger.warn("{} denied: sessionId={}, tutorId={}", operation, sessionId, tutorId);
+            throw new RuntimeException("You can only manage sessions assigned to your account.");
+        }
+
+        return tutoringSession;
     }
 }

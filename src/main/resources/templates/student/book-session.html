@@ -9,11 +9,13 @@
 <body>
     <div th:replace="~{fragments/header :: siteHeader}"></div>
     <main class="page-main">
-        <div class="container">
-            <section class="page-shell">
+        <div class="container page-container">
+            <section class="page-card">
                 <header class="page-header">
-                    <h1>Book a Tutoring Session</h1>
+                    <p class="eyebrow">Student Services</p>
+                    <h1>Available Tutoring Sessions</h1>
                     <p>Review the current tutoring slots below and choose an available time that fits your schedule.</p>
+                    <p class="subtle-identity" th:text="'Signed in as ' + ${student.name} + ' (' + ${student.email} + ')'">Signed in as student</p>
                 </header>
 
                 <section class="flash-messages" th:if="${successMessage != null or errorMessage != null}">
@@ -22,33 +24,46 @@
                 </section>
 
                 <section th:if="${#lists.isEmpty(slots)}" class="empty-state">
-                    <h2>No Slots Available</h2>
-                    <p>No tutoring slots are currently available. Please check back later.</p>
+                    <div class="section-heading">
+                        <h2>No Sessions Currently Available</h2>
+                        <p>There are no open tutoring appointments at this time. Please return later to review updated tutor availability.</p>
+                    </div>
                 </section>
 
-                <section th:unless="${#lists.isEmpty(slots)}">
+                <section th:unless="${#lists.isEmpty(slots)}" class="table-card">
+                    <div class="table-header">
+                        <div class="section-heading">
+                            <h2>Session Availability</h2>
+                            <p>Each listing below shows the tutor, date, and scheduled time window currently open for booking.</p>
+                        </div>
+                    </div>
                     <div class="table-wrapper">
-                        <table>
+                        <table aria-label="Available tutoring sessions">
                             <thead>
                             <tr>
-                                <th>Tutor Name</th>
+                                <th>Tutor</th>
                                 <th>Date</th>
                                 <th>Start Time</th>
                                 <th>End Time</th>
-                                <th>Action</th>
+                                <th class="table-action-cell">Action</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr th:each="slot : ${slots}">
-                                <td th:text="${slot.tutor.name}">Tutor Name</td>
+                                <td>
+                                    <div class="session-meta">
+                                        <strong th:text="${slot.tutor.name}">Tutor Name</strong>
+                                        <span class="muted-note">Available tutoring session</span>
+                                    </div>
+                                </td>
                                 <td th:text="${slot.date}">Date</td>
                                 <td th:text="${slot.startTime}">Start Time</td>
                                 <td th:text="${slot.endTime}">End Time</td>
-                                <td>
-                                    <form th:action="@{/student/book}" action="/student/book" method="post">
-                                        <input type="hidden" name="studentId" value="1" />
+                                <td class="table-action-cell">
+                                    <form class="table-action-form booking-form" th:action="@{/student/book}" action="/student/book" method="post">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                         <input type="hidden" name="slotId" th:value="${slot.id}" />
-                                        <button type="submit">Book Session</button>
+                                        <button class="primary-button" type="submit">Book Session</button>
                                     </form>
                                 </td>
                             </tr>

@@ -9,27 +9,46 @@
 <body>
     <div th:replace="~{fragments/header :: siteHeader}"></div>
     <main class="page-main">
-        <div class="container">
-            <section class="page-shell">
+        <div class="container page-container">
+            <section class="page-card">
                 <header class="page-header">
+                    <p class="eyebrow">Academic Support</p>
                     <h1>Academic Tutoring Portal</h1>
-                    <p>Schedule and manage tutoring sessions through a single, structured portal for students and tutors.</p>
+                    <p>Use this portal to coordinate tutoring appointments, review available sessions, and maintain an accurate tutor schedule for daily academic support operations.</p>
                 </header>
-                <section class="hero-grid" aria-label="Primary actions">
-                    <article class="hero-panel">
-                        <h2>Book a Tutoring Session</h2>
-                        <p>View currently available tutoring slots and submit a booking request using the student workflow.</p>
+
+                <section class="card-grid" aria-label="Primary actions">
+                    <article class="action-card">
+                        <div class="section-heading">
+                            <h2>Student Booking</h2>
+                            <p>Review current tutor availability and reserve a session using the standard student booking workflow.</p>
+                        </div>
                         <div class="button-row">
-                            <a class="button" th:href="@{/student/book}" href="/student/book">Book Session</a>
+                            <a class="primary-button" th:href="@{/student/book}" href="/student/book">Open Booking</a>
                         </div>
                     </article>
-                    <article class="hero-panel">
-                        <h2>Manage Tutor Schedule</h2>
-                        <p>Review booked sessions, update the scheduled time, and cancel sessions that should remain on record.</p>
+
+                    <article class="action-card">
+                        <div class="section-heading">
+                            <h2>Tutor Schedule Management</h2>
+                            <p>Maintain booked sessions, update appointment times, and preserve cancelled sessions as part of the tutoring record.</p>
+                        </div>
                         <div class="button-row">
-                            <a class="button button-secondary" th:href="@{/tutor/schedule(tutorId=1)}" href="/tutor/schedule?tutorId=1">Tutor Schedule</a>
+                            <a class="secondary-button" th:href="@{/tutor/schedule}" href="/tutor/schedule">View Schedule</a>
                         </div>
                     </article>
+                </section>
+
+                <section class="info-panel" aria-label="System overview">
+                    <div class="section-heading">
+                        <h2>System Overview</h2>
+                        <p>The portal supports the core tutoring workflow used by students and tutors during routine academic support operations.</p>
+                    </div>
+                    <ul class="info-list">
+                        <li>Students can review active tutoring slots and submit bookings for available times.</li>
+                        <li>Tutors can add new availability, adjust scheduled sessions, and retain cancelled records for reference.</li>
+                        <li>Shared status and feedback messages keep session activity clear across each page.</li>
+                    </ul>
                 </section>
             </section>
         </div>

@@ -38,11 +38,13 @@ public class DataLoader implements CommandLineRunner {
             return;
         }
 
-        Student studentOne = studentRepository.save(new Student("Alicia Brown", "alicia.brown@example.com"));
-        Student studentTwo = studentRepository.save(new Student("Daniel Wright", "daniel.wright@example.com"));
+        Student studentOne = studentRepository.save(new Student(DemoAccounts.STUDENT_NAME, DemoAccounts.STUDENT_EMAIL));
+        Student studentTwo = studentRepository.save(
+                new Student(DemoAccounts.SECOND_STUDENT_NAME, DemoAccounts.SECOND_STUDENT_EMAIL));
 
-        Tutor tutorOne = tutorRepository.save(new Tutor("Maya Thompson", "Mathematics"));
-        Tutor tutorTwo = tutorRepository.save(new Tutor("Ethan Clarke", "Physics"));
+        Tutor tutorOne = tutorRepository.save(new Tutor(DemoAccounts.TUTOR_NAME, DemoAccounts.TUTOR_EMAIL, "Mathematics"));
+        Tutor tutorTwo = tutorRepository.save(
+                new Tutor(DemoAccounts.SECOND_TUTOR_NAME, DemoAccounts.SECOND_TUTOR_EMAIL, "Physics"));
 
         sessionSlotRepository.save(new SessionSlot(
                 tutorOne,
