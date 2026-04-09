@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 
 @Entity
 public class TutoringSession {
@@ -32,6 +33,9 @@ public class TutoringSession {
 
     @Enumerated(EnumType.STRING)
     private SessionStatus status;
+
+    @OneToOne
+    private SessionSlot slot;
 
     public TutoringSession() {
     }
@@ -100,5 +104,13 @@ public class TutoringSession {
 
     public void setStatus(SessionStatus status) {
         this.status = status;
+    }
+
+    public SessionSlot getSlot() {
+        return slot;
+    }
+
+    public void setSlot(SessionSlot slot) {
+        this.slot = slot;
     }
 }

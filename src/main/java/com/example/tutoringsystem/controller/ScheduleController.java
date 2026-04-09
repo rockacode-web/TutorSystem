@@ -3,6 +3,7 @@ package com.example.tutoringsystem.controller;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.tutoringsystem.model.Tutor;
+import com.example.tutoringsystem.model.TutoringSession;
 import com.example.tutoringsystem.service.PortalIdentityService;
 import com.example.tutoringsystem.service.ScheduleService;
 
@@ -35,7 +37,9 @@ public class ScheduleController {
     @GetMapping("/tutor/schedule")
     public String showTutorSchedule(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         Tutor tutor = portalIdentityService.getTutorByUsername(userDetails.getUsername());
-        model.addAttribute("sessions", scheduleService.getSessionsByTutor(tutor.getId()));
+        List<TutoringSession> sessions = scheduleService.getSessionsByTutor(tutor.getId());
+        model.addAttribute("sessions", sessions);
+        model.addAttribute("slots", scheduleService.getSlotsByTutor(tutor.getId()));
         model.addAttribute("tutor", tutor);
         return "tutor/manage-schedule";
     }

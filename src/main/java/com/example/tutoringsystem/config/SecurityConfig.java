@@ -20,10 +20,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login", "/css/**").permitAll()
+                        .requestMatchers("/login", "/register", "/css/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/student/**").hasRole("STUDENT")
                         .requestMatchers("/tutor/**").hasRole("TUTOR")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -32,6 +33,8 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login?logout")
                         .permitAll())
+                .exceptionHandling(exception -> exception
+                        .accessDeniedPage("/access-denied"))
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers("/h2-console/**"))
                 .headers(headers -> headers

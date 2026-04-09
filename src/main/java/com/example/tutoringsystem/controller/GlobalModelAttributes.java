@@ -39,13 +39,26 @@ public class GlobalModelAttributes {
         return hasRole(authentication, "ROLE_TUTOR");
     }
 
+    @ModelAttribute("isAdmin")
+    public boolean isAdmin(Authentication authentication) {
+        return hasRole(authentication, "ROLE_ADMIN");
+    }
+
     @ModelAttribute("currentRoleLabel")
     public String currentRoleLabel(Authentication authentication) {
         if (!isAuthenticated(authentication)) {
             return null;
         }
 
-        return isTutor(authentication) ? "Tutor" : "Student";
+        if (isAdmin(authentication)) {
+            return "Admin";
+        }
+
+        if (isTutor(authentication)) {
+            return "Tutor";
+        }
+
+        return "Student";
     }
 
     @ModelAttribute("currentDisplayName")
@@ -55,6 +68,10 @@ public class GlobalModelAttributes {
         }
 
         String username = authentication.getName();
+        if (isAdmin(authentication)) {
+            return portalIdentityService.getAdminByUsername(username).getName();
+        }
+
         if (isTutor(authentication)) {
             return portalIdentityService.getTutorByUsername(username).getName();
         }

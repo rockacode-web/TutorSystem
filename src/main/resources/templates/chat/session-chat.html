@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${pageTitle}">Session Chat</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: siteHeader}"></div>
+    <main class="page-main">
+        <div class="container page-container">
+            <section class="page-card">
+                <header class="page-header">
+                    <p class="eyebrow">Session Communication</p>
+                    <h1 th:text="${pageTitle}">Session Chat</h1>
+                    <p th:text="${'Chat for session #' + session.id + ' between ' + session.student.name + ' and ' + session.tutor.name + '.'}">Chat details</p>
+                </header>
+
+                <section class="flash-messages" th:if="${errorMessage != null}">
+                    <p class="flash-message flash-error" th:text="${errorMessage}">Chat error</p>
+                </section>
+
+                <section class="info-panel session-summary-grid">
+                    <div>
+                        <span class="field-label">Student</span>
+                        <p th:text="${session.student.name}">Student</p>
+                    </div>
+                    <div>
+                        <span class="field-label">Tutor</span>
+                        <p th:text="${session.tutor.name}">Tutor</p>
+                    </div>
+                    <div>
+                        <span class="field-label">Date</span>
+                        <p th:text="${session.date}">Date</p>
+                    </div>
+                    <div>
+                        <span class="field-label">Time</span>
+                        <p th:text="${session.startTime + ' - ' + session.endTime}">Time</p>
+                    </div>
+                </section>
+
+                <section th:if="${#lists.isEmpty(messages)}" class="empty-state">
+                    <div class="section-heading">
+                        <h2>No Messages Yet</h2>
+                        <p>Start the conversation to coordinate session focus, preparation, or follow-up questions.</p>
+                    </div>
+                </section>
+
+                <section th:unless="${#lists.isEmpty(messages)}" class="info-panel chat-thread">
+                    <article class="chat-message" th:each="message : ${messages}">
+                        <div class="chat-message-meta">
+                            <strong th:text="${message.senderName}">Sender Name</strong>
+                            <span class="status-badge"
+                                  th:classappend="${message.senderRole.name() == 'STUDENT'} ? ' status-booked' : ' status-completed'"
+                                  th:text="${message.senderRole}">Role</span>
+                            <span class="muted-note" th:text="${#temporals.format(message.createdAt, 'yyyy-MM-dd HH:mm')}">Timestamp</span>
+                        </div>
+                        <p class="chat-message-body" th:text="${message.message}">Message body</p>
+                    </article>
+                </section>
+
+                <section class="form-panel">
+                    <div class="section-heading">
+                        <h2>Send Message</h2>
+                        <p>Messages are stored with the session record so both participants can review the conversation.</p>
+                    </div>
+                    <form class="inline-form" th:action="${postUrl}" action="/student/chat/1" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <div class="form-field">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="4" maxlength="1000" placeholder="Type your message here..." required></textarea>
+                        </div>
+                        <div class="action-group">
+                            <button class="primary-button" type="submit">Send Message</button>
+                            <a class="secondary-button" th:href="${returnUrl}" href="/student/schedule">Return to Schedule</a>
+                        </div>
+                    </form>
+                </section>
+            </section>
+        </div>
+    </main>
+    <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>

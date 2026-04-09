@@ -15,7 +15,7 @@
                     <p class="eyebrow">Tutor Services</p>
                     <h1>Tutor Schedule Management</h1>
                     <p>Review booked tutoring sessions, update upcoming appointment times, and retain cancelled sessions as part of the official schedule record.</p>
-                    <p class="subtle-identity" th:text="'Signed in as ' + ${tutor.name} + ' (' + ${tutor.email} + ')'">Signed in as tutor</p>
+                    <p class="subtle-identity" th:text="${'Signed in as ' + tutor.name + ' (' + tutor.email + ')'}">Signed in as tutor</p>
                 </header>
 
                 <section class="flash-messages" th:if="${successMessage != null or errorMessage != null}">
@@ -48,7 +48,54 @@
                     </form>
                 </section>
 
-                <section class="table-card">
+                <section th:if="${#lists.isEmpty(slots)}" class="empty-state">
+                    <div class="section-heading">
+                        <h2>No Slot Inventory Yet</h2>
+                        <p>Create an available slot above to publish tutoring availability for students.</p>
+                    </div>
+                </section>
+
+                <section th:unless="${#lists.isEmpty(slots)}" class="table-card">
+                    <div class="table-header">
+                        <div class="section-heading">
+                            <h2>Current Slot Inventory</h2>
+                            <p>Review which time blocks are still open and which ones are already tied to booked sessions.</p>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table aria-label="Tutor slot inventory">
+                            <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="slot : ${slots}">
+                                <td th:text="${slot.date}">Date</td>
+                                <td th:text="${slot.startTime}">Start</td>
+                                <td th:text="${slot.endTime}">End</td>
+                                <td>
+                                    <span class="status-badge"
+                                          th:classappend="${slot.available} ? ' status-booked' : ' status-cancelled'"
+                                          th:text="${slot.available ? 'AVAILABLE' : 'RESERVED'}">AVAILABLE</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section th:if="${#lists.isEmpty(sessions)}" class="empty-state">
+                    <div class="section-heading">
+                        <h2>No Sessions Assigned Yet</h2>
+                        <p>Booked tutoring sessions will appear here once students reserve one of your published slots.</p>
+                    </div>
+                </section>
+
+                <section th:unless="${#lists.isEmpty(sessions)}" class="table-card">
                     <div class="table-header">
                         <div class="section-heading">
                             <h2>Scheduled Sessions</h2>
@@ -94,18 +141,18 @@
                                             <input type="hidden" name="sessionId" th:value="${tutoringSession.id}" />
                                             <div class="action-fields">
                                                 <div class="form-field">
-                                                    <label th:for="'date-' + ${tutoringSession.id}">Revised Date</label>
-                                                    <input th:id="'date-' + ${tutoringSession.id}" type="date" name="newDate" th:value="${tutoringSession.date}"
+                                                    <label th:for="${'date-' + tutoringSession.id}">Revised Date</label>
+                                                    <input th:id="${'date-' + tutoringSession.id}" type="date" name="newDate" th:value="${tutoringSession.date}"
                                                            th:disabled="${tutoringSession.status.name() == 'CANCELLED'}" />
                                                 </div>
                                                 <div class="form-field">
-                                                    <label th:for="'start-' + ${tutoringSession.id}">Start Time</label>
-                                                    <input th:id="'start-' + ${tutoringSession.id}" type="time" name="newStartTime" th:value="${tutoringSession.startTime}"
+                                                    <label th:for="${'start-' + tutoringSession.id}">Start Time</label>
+                                                    <input th:id="${'start-' + tutoringSession.id}" type="time" name="newStartTime" th:value="${tutoringSession.startTime}"
                                                            th:disabled="${tutoringSession.status.name() == 'CANCELLED'}" />
                                                 </div>
                                                 <div class="form-field">
-                                                    <label th:for="'end-' + ${tutoringSession.id}">End Time</label>
-                                                    <input th:id="'end-' + ${tutoringSession.id}" type="time" name="newEndTime" th:value="${tutoringSession.endTime}"
+                                                    <label th:for="${'end-' + tutoringSession.id}">End Time</label>
+                                                    <input th:id="${'end-' + tutoringSession.id}" type="time" name="newEndTime" th:value="${tutoringSession.endTime}"
                                                            th:disabled="${tutoringSession.status.name() == 'CANCELLED'}" />
                                                 </div>
                                             </div>
@@ -116,11 +163,17 @@
 
                                         <form th:if="${tutoringSession.status.name() != 'CANCELLED'}"
                                               class="table-action-form"
-                                              th:action="@{/tutor/schedule/cancel}" action="/tutor/schedule/cancel" method="post">
+                                              th:action="@{/tutor/schedule/cancel}" action="/tutor/schedule/cancel" method="post"
+                                              onsubmit="return confirm('Cancel this tutoring session?');">
                                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                                             <input type="hidden" name="sessionId" th:value="${tutoringSession.id}" />
                                             <button class="danger-button" type="submit">Cancel Session</button>
                                         </form>
+
+                                        <a th:if="${tutoringSession.status.name() == 'BOOKED'}"
+                                           class="secondary-button"
+                                           th:href="@{'/tutor/chat/' + ${tutoringSession.id}}"
+                                           href="/tutor/chat/1">Open Chat</a>
 
                                         <p class="muted-note" th:if="${tutoringSession.status.name() == 'CANCELLED'}">Cancelled session. No further edits allowed.</p>
                                     </div>

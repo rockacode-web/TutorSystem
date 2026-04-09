@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: siteHeader}"></div>
+    <main class="page-main">
+        <div class="container page-container">
+            <section class="page-card">
+                <header class="page-header">
+                    <p class="eyebrow">Administration</p>
+                    <h1>Administrative Dashboard</h1>
+                    <p>Use the controls below to approve student registrations, review user access, and inspect tutoring activity reports for the portal demo.</p>
+                </header>
+
+                <section class="metric-grid">
+                    <article class="metric-card" th:each="metric : ${dashboardReport.metrics}">
+                        <span class="field-label" th:text="${metric.label}">Metric</span>
+                        <strong class="metric-value" th:text="${metric.value}">0</strong>
+                    </article>
+                    <article class="metric-card">
+                        <span class="field-label">Pending approvals</span>
+                        <strong class="metric-value" th:text="${pendingCount}">0</strong>
+                    </article>
+                </section>
+
+                <section class="card-grid">
+                    <article class="action-card">
+                        <div class="section-heading">
+                            <h2>Pending Registrations</h2>
+                            <p>Review new student requests and approve or reject them before portal access is granted.</p>
+                        </div>
+                        <a class="primary-button" th:href="@{/admin/pending-users}" href="/admin/pending-users">Open Pending Users</a>
+                    </article>
+                    <article class="action-card">
+                        <div class="section-heading">
+                            <h2>User Management</h2>
+                            <p>Inspect active users across all roles and deactivate accounts that should no longer use the system.</p>
+                        </div>
+                        <a class="primary-button" th:href="@{/admin/users}" href="/admin/users">Open User Management</a>
+                    </article>
+                    <article class="action-card">
+                        <div class="section-heading">
+                            <h2>Reports</h2>
+                            <p>Generate overview, user, session, and slot availability summaries for project documentation and demonstration.</p>
+                        </div>
+                        <a class="primary-button" th:href="@{/admin/reports}" href="/admin/reports">Open Reports</a>
+                    </article>
+                </section>
+            </section>
+        </div>
+    </main>
+    <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>

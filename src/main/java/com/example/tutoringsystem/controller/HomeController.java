@@ -9,8 +9,14 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Authentication authentication) {
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
         boolean isTutor = authentication.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_TUTOR"));
+
+        if (isAdmin) {
+            return "redirect:/admin/dashboard";
+        }
 
         if (isTutor) {
             return "redirect:/tutor/schedule";

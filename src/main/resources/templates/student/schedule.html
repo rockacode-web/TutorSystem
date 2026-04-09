@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Student Schedule</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: siteHeader}"></div>
+    <main class="page-main">
+        <div class="container page-container">
+            <section class="page-card">
+                <header class="page-header">
+                    <p class="eyebrow">Student Services</p>
+                    <h1>My Tutoring Schedule</h1>
+                    <p>Review your booked and cancelled tutoring sessions, open session chat with your tutor, and cancel upcoming bookings when needed.</p>
+                    <p class="subtle-identity" th:text="${'Signed in as ' + student.name + ' (' + student.email + ')'}">Signed in as student</p>
+                </header>
+
+                <section class="flash-messages" th:if="${successMessage != null or errorMessage != null}">
+                    <p class="flash-message flash-success" th:if="${successMessage}" th:text="${successMessage}">Success</p>
+                    <p class="flash-message flash-error" th:if="${errorMessage}" th:text="${errorMessage}">Error</p>
+                </section>
+
+                <section th:if="${#lists.isEmpty(upcomingSessions) and #lists.isEmpty(cancelledSessions)}" class="empty-state">
+                    <div class="section-heading">
+                        <h2>No Sessions Yet</h2>
+                        <p>You do not have any tutoring sessions on record yet. Book an available slot to populate your schedule.</p>
+                    </div>
+                    <div class="action-group">
+                        <a class="primary-button" th:href="@{/student/book}" href="/student/book">Book a Session</a>
+                    </div>
+                </section>
+
+                <section th:unless="${#lists.isEmpty(upcomingSessions)}" class="table-card">
+                    <div class="table-header">
+                        <div class="section-heading">
+                            <h2>Upcoming Sessions</h2>
+                            <p>Your active tutoring bookings remain editable until they are cancelled.</p>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table aria-label="Upcoming tutoring sessions">
+                            <thead>
+                            <tr>
+                                <th>Tutor</th>
+                                <th>Date</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Status</th>
+                                <th class="table-action-cell">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="session : ${upcomingSessions}">
+                                <td>
+                                    <div class="session-meta">
+                                        <strong th:text="${session.tutor.name}">Tutor Name</strong>
+                                        <span class="muted-note" th:text="${session.tutor.subject}">Subject</span>
+                                    </div>
+                                </td>
+                                <td th:text="${session.date}">Date</td>
+                                <td th:text="${session.startTime}">Start Time</td>
+                                <td th:text="${session.endTime}">End Time</td>
+                                <td>
+                                    <span class="status-badge status-booked" th:text="${session.status}">BOOKED</span>
+                                </td>
+                                <td class="table-action-cell">
+                                    <div class="session-actions">
+                                        <a class="secondary-button"
+                                           th:href="@{'/student/chat/' + ${session.id}}"
+                                           href="/student/chat/1">Open Chat</a>
+                                        <form class="table-action-form"
+                                              th:action="@{/student/session/cancel}"
+                                              action="/student/session/cancel"
+                                              method="post"
+                                              onsubmit="return confirm('Cancel this tutoring session?');">
+                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                            <input type="hidden" name="sessionId" th:value="${session.id}">
+                                            <button class="danger-button" type="submit">Cancel Session</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section th:if="${#lists.isEmpty(upcomingSessions) and !#lists.isEmpty(cancelledSessions)}" class="empty-state">
+                    <div class="section-heading">
+                        <h2>No Upcoming Sessions</h2>
+                        <p>Your current schedule only contains cancelled records. Book another tutoring slot when you are ready.</p>
+                    </div>
+                </section>
+
+                <section th:unless="${#lists.isEmpty(cancelledSessions)}" class="table-card">
+                    <div class="table-header">
+                        <div class="section-heading">
+                            <h2>Cancelled Sessions</h2>
+                            <p>Cancelled sessions stay visible as part of your schedule history.</p>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table aria-label="Cancelled tutoring sessions">
+                            <thead>
+                            <tr>
+                                <th>Tutor</th>
+                                <th>Date</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="session : ${cancelledSessions}" class="row-cancelled">
+                                <td th:text="${session.tutor.name}">Tutor Name</td>
+                                <td th:text="${session.date}">Date</td>
+                                <td th:text="${session.startTime}">Start Time</td>
+                                <td th:text="${session.endTime}">End Time</td>
+                                <td><span class="status-badge status-cancelled" th:text="${session.status}">CANCELLED</span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section th:unless="${#lists.isEmpty(notifications)}" class="info-panel">
+                    <div class="section-heading">
+                        <h2>Recent Notifications</h2>
+                        <p>Recent in-app confirmation and cancellation messages for your account.</p>
+                    </div>
+                    <div class="notification-list">
+                        <article class="notification-item" th:each="notification : ${notifications}">
+                            <p class="notification-message" th:text="${notification.message}">Notification message</p>
+                            <p class="muted-note" th:text="${#temporals.format(notification.createdAt, 'yyyy-MM-dd HH:mm')}">Timestamp</p>
+                        </article>
+                    </div>
+                </section>
+            </section>
+        </div>
+    </main>
+    <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>

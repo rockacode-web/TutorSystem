@@ -18,9 +18,11 @@
                         <p>Use a seeded demo account to enter the tutoring portal and continue with the appropriate student or tutor workflow.</p>
                     </header>
 
-                    <section class="flash-messages" th:if="${param.error != null or param.logout != null}">
-                        <p class="flash-message flash-error" th:if="${param.error != null}">Sign-in failed. Check the email and password, then try again.</p>
+                    <section class="flash-messages" th:if="${param.error != null or param.logout != null or successMessage != null}">
+                        <p class="flash-message flash-error" th:if="${param.error != null}"
+                           th:text="${session.SPRING_SECURITY_LAST_EXCEPTION != null ? session.SPRING_SECURITY_LAST_EXCEPTION.message : 'Sign-in failed. Check the email and password, then try again.'}">Sign-in failed. Check the email and password, then try again.</p>
                         <p class="flash-message flash-success" th:if="${param.logout != null}">You have been signed out successfully.</p>
+                        <p class="flash-message flash-success" th:if="${successMessage}" th:text="${successMessage}">Registration submitted.</p>
                     </section>
 
                     <form class="login-form" th:action="@{/login}" action="/login" method="post">
@@ -35,6 +37,7 @@
                         </div>
                         <div class="action-group">
                             <button class="primary-button" type="submit">Sign In</button>
+                            <a class="secondary-button" th:href="@{/register}" href="/register">Create Student Account</a>
                         </div>
                     </form>
                 </div>
@@ -53,6 +56,16 @@
                         <span class="status-badge status-completed">Tutor</span>
                         <p><strong>Email:</strong> <span th:text="${T(com.example.tutoringsystem.config.DemoAccounts).TUTOR_EMAIL}">maya.thompson@example.com</span></p>
                         <p><strong>Password:</strong> <span th:text="${T(com.example.tutoringsystem.config.DemoAccounts).TUTOR_PASSWORD}">tutor123</span></p>
+                    </div>
+                    <div class="credential-card">
+                        <span class="status-badge status-booked">Admin</span>
+                        <p><strong>Email:</strong> <span th:text="${T(com.example.tutoringsystem.config.DemoAccounts).ADMIN_EMAIL}">admin@portal.example</span></p>
+                        <p><strong>Password:</strong> <span th:text="${T(com.example.tutoringsystem.config.DemoAccounts).ADMIN_PASSWORD}">admin123</span></p>
+                    </div>
+                    <div class="credential-card">
+                        <span class="status-badge status-cancelled">Pending Student</span>
+                        <p><strong>Email:</strong> <span th:text="${T(com.example.tutoringsystem.config.DemoAccounts).SECOND_STUDENT_EMAIL}">daniel.wright@example.com</span></p>
+                        <p><strong>Password:</strong> <span th:text="${T(com.example.tutoringsystem.config.DemoAccounts).SECOND_STUDENT_PASSWORD}">student456</span></p>
                     </div>
                 </aside>
             </section>

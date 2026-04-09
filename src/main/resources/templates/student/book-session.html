@@ -15,7 +15,7 @@
                     <p class="eyebrow">Student Services</p>
                     <h1>Available Tutoring Sessions</h1>
                     <p>Review the current tutoring slots below and choose an available time that fits your schedule.</p>
-                    <p class="subtle-identity" th:text="'Signed in as ' + ${student.name} + ' (' + ${student.email} + ')'">Signed in as student</p>
+                    <p class="subtle-identity" th:text="${'Signed in as ' + student.name + ' (' + student.email + ')'}">Signed in as student</p>
                 </header>
 
                 <section class="flash-messages" th:if="${successMessage != null or errorMessage != null}">

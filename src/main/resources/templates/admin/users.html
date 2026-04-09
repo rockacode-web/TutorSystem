@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>User Management</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: siteHeader}"></div>
+    <main class="page-main">
+        <div class="container page-container">
+            <section class="page-card">
+                <header class="page-header">
+                    <p class="eyebrow">Administration</p>
+                    <h1>User Management</h1>
+                    <p>Review system access across students, tutors, and administrators. Deactivation preserves user records while preventing future sign-in.</p>
+                </header>
+
+                <section class="flash-messages" th:if="${successMessage != null or errorMessage != null}">
+                    <p class="flash-message flash-success" th:if="${successMessage}" th:text="${successMessage}">Success</p>
+                    <p class="flash-message flash-error" th:if="${errorMessage}" th:text="${errorMessage}">Error</p>
+                </section>
+
+                <section class="table-card">
+                    <div class="table-header">
+                        <div class="section-heading">
+                            <h2>All Portal Users</h2>
+                            <p>Approval status and active status are shown for every role.</p>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table aria-label="Portal users">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Details</th>
+                                <th>Approval</th>
+                                <th>Active</th>
+                                <th class="table-action-cell">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="user : ${users}">
+                                <td th:text="${user.name}">Name</td>
+                                <td th:text="${user.email}">Email</td>
+                                <td><span class="status-badge status-booked" th:text="${user.role}">ROLE</span></td>
+                                <td th:text="${user.detail}">Detail</td>
+                                <td th:text="${user.approvalStatus}">APPROVED</td>
+                                <td th:text="${user.active ? 'ACTIVE' : 'INACTIVE'}">ACTIVE</td>
+                                <td class="table-action-cell">
+                                    <form th:if="${user.active}"
+                                          class="table-action-form"
+                                          th:action="@{/admin/users/deactivate}"
+                                          action="/admin/users/deactivate"
+                                          method="post"
+                                          onsubmit="return confirm('Deactivate this user account?');">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                        <input type="hidden" name="role" th:value="${user.role}">
+                                        <input type="hidden" name="userId" th:value="${user.id}">
+                                        <button class="danger-button" type="submit">Deactivate</button>
+                                    </form>
+                                    <p class="muted-note" th:if="${!user.active}">Already inactive</p>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+        </div>
+    </main>
+    <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>
