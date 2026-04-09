@@ -18,12 +18,16 @@ public class BookingService {
     private final SessionSlotRepository sessionSlotRepository;
     private final StudentRepository studentRepository;
     private final TutoringSessionRepository tutoringSessionRepository;
+    private final NotificationService emailService;
 
-    public BookingService(SessionSlotRepository sessionSlotRepository, StudentRepository studentRepository,
-            TutoringSessionRepository tutoringSessionRepository) {
+    public BookingService(SessionSlotRepository sessionSlotRepository,
+            StudentRepository studentRepository,
+            TutoringSessionRepository tutoringSessionRepository,
+            NotificationService emailService) {
         this.sessionSlotRepository = sessionSlotRepository;
         this.studentRepository = studentRepository;
         this.tutoringSessionRepository = tutoringSessionRepository;
+        this.emailService = emailService;
     }
 
     public List<SessionSlot> getAvailableSlots() {
@@ -50,8 +54,12 @@ public class BookingService {
                 SessionStatus.BOOKED);
 
         TutoringSession savedSession = tutoringSessionRepository.save(tutoringSession);
+
         slot.setAvailable(false);
         sessionSlotRepository.save(slot);
+
+        // Send booking confirmation email
+        emailService.sendBookingConfirmation(savedSession);
 
         return savedSession;
     }

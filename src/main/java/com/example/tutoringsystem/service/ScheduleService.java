@@ -24,13 +24,16 @@ public class ScheduleService {
     private final TutoringSessionRepository tutoringSessionRepository;
     private final SessionSlotRepository sessionSlotRepository;
     private final TutorRepository tutorRepository;
+    private final NotificationService emailService;
 
     public ScheduleService(TutoringSessionRepository tutoringSessionRepository,
             SessionSlotRepository sessionSlotRepository,
-            TutorRepository tutorRepository) {
+            TutorRepository tutorRepository,
+            NotificationService emailService) {
         this.tutoringSessionRepository = tutoringSessionRepository;
         this.sessionSlotRepository = sessionSlotRepository;
         this.tutorRepository = tutorRepository;
+        this.emailService = emailService;
     }
 
     public List<TutoringSession> getSessionsByTutor(Long tutorId) {
@@ -59,9 +62,9 @@ public class ScheduleService {
         return savedSlot;
     }
 
-    // MVP state rule: BOOKED -> CANCELLED is allowed, and cancelled sessions remain visible for history.
-    public TutoringSession cancelSession(Long sessionId) {
+    public TutoringSession cancelSession(Long sessionId, String cancelReason) {
         logger.info("cancelSession entered: sessionId={}", sessionId);
+
         TutoringSession tutoringSession = tutoringSessionRepository.findById(sessionId)
                 .orElseThrow(() -> {
                     logger.warn("cancelSession session not found: sessionId={}", sessionId);
@@ -70,32 +73,31 @@ public class ScheduleService {
 
         logger.info("cancelSession session found: sessionId={}, oldStatus={}", sessionId, tutoringSession.getStatus());
         tutoringSession.setStatus(SessionStatus.CANCELLED);
-        logger.info("cancelSession status updated: sessionId={}, newStatus={}", sessionId, tutoringSession.getStatus());
+
         TutoringSession savedSession = tutoringSessionRepository.save(tutoringSession);
         logger.info("cancelSession save completed: sessionId={}", sessionId);
+
+        // Send cancellation email with reason
+        emailService.sendCancellationNotice(savedSession, "Tutor", cancelReason);
+
         return savedSession;
     }
 
-    // MVP state rule: CANCELLED sessions cannot have date/time updated; a future flow can handle reschedule/reactivate.
     public TutoringSession updateSession(Long sessionId, LocalDate newDate, LocalTime newStartTime,
             LocalTime newEndTime) {
         logger.info("updateSession entered: sessionId={}", sessionId);
+
         TutoringSession tutoringSession = tutoringSessionRepository.findById(sessionId)
                 .orElseThrow(() -> {
                     logger.warn("updateSession session not found: sessionId={}", sessionId);
                     return new RuntimeException("Tutoring session not found with id: " + sessionId);
                 });
 
-        logger.info("updateSession session found: sessionId={}, oldDate={}, oldStartTime={}, oldEndTime={}",
-                sessionId, tutoringSession.getDate(), tutoringSession.getStartTime(), tutoringSession.getEndTime());
-
         if (tutoringSession.getStatus() == SessionStatus.CANCELLED) {
             logger.warn("updateSession blocked for cancelled session: sessionId={}", sessionId);
             throw new RuntimeException("Cancelled sessions cannot be updated.");
         }
 
-        logger.info("updateSession new values: sessionId={}, newDate={}, newStartTime={}, newEndTime={}",
-                sessionId, newDate, newStartTime, newEndTime);
         tutoringSession.setDate(newDate);
         tutoringSession.setStartTime(newStartTime);
         tutoringSession.setEndTime(newEndTime);
