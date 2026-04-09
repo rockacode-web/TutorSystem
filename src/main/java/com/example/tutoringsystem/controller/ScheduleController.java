@@ -100,7 +100,7 @@ public class ScheduleController {
         logger.info("Schedule cancel requested: sessionId={}, tutorId={}, cancelReason={}",
                 sessionId, tutorId, cancelReason);
 
-        // Build the final reason string
+        // Reason for cancellation
         String finalReason;
         if ("Other".equals(cancelReason)) {
             if (otherReason == null || otherReason.isBlank()) {
