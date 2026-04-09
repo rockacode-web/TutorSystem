@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reports</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: siteHeader}"></div>
+    <main class="page-main">
+        <div class="container page-container">
+            <section class="page-card">
+                <header class="page-header">
+                    <p class="eyebrow">Administration</p>
+                    <h1>Portal Reports</h1>
+                    <p>Select a report type to retrieve summary metrics for users, sessions, and slot availability.</p>
+                </header>
+
+                <section class="form-panel">
+                    <form class="slot-create-form" th:action="@{/admin/reports}" action="/admin/reports" method="get">
+                        <div class="form-field">
+                            <label for="type">Report Type</label>
+                            <select id="type" name="type">
+                                <option value="overview" th:selected="${report.type == 'overview'}">Overview</option>
+                                <option value="users" th:selected="${report.type == 'users'}">Users</option>
+                                <option value="sessions" th:selected="${report.type == 'sessions'}">Sessions</option>
+                                <option value="availability" th:selected="${report.type == 'availability'}">Availability</option>
+                            </select>
+                        </div>
+                        <div class="action-group">
+                            <button class="primary-button" type="submit">Generate Report</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="info-panel">
+                    <div class="section-heading">
+                        <h2 th:text="${report.title}">Overview Report</h2>
+                        <p th:text="${report.description}">Report description</p>
+                    </div>
+                    <div class="metric-grid">
+                        <article class="metric-card" th:each="metric : ${report.metrics}">
+                            <span class="field-label" th:text="${metric.label}">Metric</span>
+                            <strong class="metric-value" th:text="${metric.value}">0</strong>
+                        </article>
+                    </div>
+                </section>
+            </section>
+        </div>
+    </main>
+    <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>

@@ -1,50 +1,32 @@
 package com.example.tutoringsystem.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 
 @Entity
-public class Student {
+public class Student extends PortalAccount {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String name;
-
-    private String email;
+    @Column(nullable = false)
+    private String idNumber;
 
     public Student() {
     }
 
-    public Student(String name, String email) {
-        this.name = name;
-        this.email = email;
+    public Student(String name,
+            String email,
+            String password,
+            String idNumber,
+            ApprovalStatus approvalStatus,
+            boolean active) {
+        super(name, email, password, UserRole.STUDENT, approvalStatus, active);
+        this.idNumber = idNumber;
     }
 
-    public Long getId() {
-        return id;
+    public String getIdNumber() {
+        return idNumber;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+    public void setIdNumber(String idNumber) {
+        this.idNumber = idNumber;
     }
 }

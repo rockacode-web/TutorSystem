@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Portal Login</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: siteHeader}"></div>
+    <main class="page-main">
+        <div class="container page-container">
+            <section class="page-card login-shell">
+                <div class="login-panel">
+                    <header class="page-header">
+                        <p class="eyebrow">Academic Portal Access</p>
+                        <h1>Sign In</h1>
+                        <p>Use a seeded demo account to enter the tutoring portal and continue with the appropriate student or tutor workflow.</p>
+                    </header>
+
+                    <section class="flash-messages" th:if="${param.error != null or param.logout != null or successMessage != null}">
+                        <p class="flash-message flash-error" th:if="${param.error != null}"
+                           th:text="${session.SPRING_SECURITY_LAST_EXCEPTION != null ? session.SPRING_SECURITY_LAST_EXCEPTION.message : 'Sign-in failed. Check the email and password, then try again.'}">Sign-in failed. Check the email and password, then try again.</p>
+                        <p class="flash-message flash-success" th:if="${param.logout != null}">You have been signed out successfully.</p>
+                        <p class="flash-message flash-success" th:if="${successMessage}" th:text="${successMessage}">Registration submitted.</p>
+                    </section>
+
+                    <form class="login-form" th:action="@{/login}" action="/login" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <div class="form-field">
+                            <label for="username">Email Address</label>
+                            <input id="username" type="email" name="username" autocomplete="username" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="password">Password</label>
+                            <input id="password" type="password" name="password" autocomplete="current-password" required>
+                        </div>
+                        <div class="action-group">
+                            <button class="primary-button" type="submit">Sign In</button>
+                            <a class="secondary-button" th:href="@{/register}" href="/register">Create Student Account</a>
+                        </div>
+                    </form>
+                </div>
+
+                <aside class="info-panel demo-credentials" aria-label="Demo credentials">
+                    <div class="section-heading">
+                        <h2>Demo Accounts</h2>
+                        <p>These credentials are seeded for MVP review and map directly to existing portal records.</p>
+                    </div>
+                    <div class="credential-card">
+                        <span class="status-badge status-booked">Student</span>
+                        <p><strong>Email:</strong> <span th:text="${T(com.example.tutoringsystem.config.DemoAccounts).STUDENT_EMAIL}">alicia.brown@example.com</span></p>
+                        <p><strong>Password:</strong> <span th:text="${T(com.example.tutoringsystem.config.DemoAccounts).STUDENT_PASSWORD}">student123</span></p>
+                    </div>
+                    <div class="credential-card">
+                        <span class="status-badge status-completed">Tutor</span>
+                        <p><strong>Email:</strong> <span th:text="${T(com.example.tutoringsystem.config.DemoAccounts).TUTOR_EMAIL}">maya.thompson@example.com</span></p>
+                        <p><strong>Password:</strong> <span th:text="${T(com.example.tutoringsystem.config.DemoAccounts).TUTOR_PASSWORD}">tutor123</span></p>
+                    </div>
+                    <div class="credential-card">
+                        <span class="status-badge status-booked">Admin</span>
+                        <p><strong>Email:</strong> <span th:text="${T(com.example.tutoringsystem.config.DemoAccounts).ADMIN_EMAIL}">admin@portal.example</span></p>
+                        <p><strong>Password:</strong> <span th:text="${T(com.example.tutoringsystem.config.DemoAccounts).ADMIN_PASSWORD}">admin123</span></p>
+                    </div>
+                    <div class="credential-card">
+                        <span class="status-badge status-cancelled">Pending Student</span>
+                        <p><strong>Email:</strong> <span th:text="${T(com.example.tutoringsystem.config.DemoAccounts).SECOND_STUDENT_EMAIL}">daniel.wright@example.com</span></p>
+                        <p><strong>Password:</strong> <span th:text="${T(com.example.tutoringsystem.config.DemoAccounts).SECOND_STUDENT_PASSWORD}">student456</span></p>
+                    </div>
+                </aside>
+            </section>
+        </div>
+    </main>
+    <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>

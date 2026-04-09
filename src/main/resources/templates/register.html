@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Student Registration</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css">
+</head>
+<body>
+    <div th:replace="~{fragments/header :: siteHeader}"></div>
+    <main class="page-main">
+        <div class="container page-container">
+            <section class="page-card login-shell">
+                <div class="login-panel">
+                    <header class="page-header">
+                        <p class="eyebrow">Student Registration</p>
+                        <h1>Create a Student Account</h1>
+                        <p>Submit your registration details to request access to the tutoring scheduling portal. New student accounts remain pending until approved by an administrator.</p>
+                    </header>
+
+                    <section class="flash-messages" th:if="${errorMessage != null}">
+                        <p class="flash-message flash-error" th:text="${errorMessage}">Registration error.</p>
+                    </section>
+
+                    <form class="login-form" th:action="@{/register}" action="/register" method="post" th:object="${registrationForm}">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <div class="form-field">
+                            <label for="name">Full Name</label>
+                            <input id="name" type="text" th:field="*{name}" autocomplete="name" required>
+                            <p class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name error</p>
+                        </div>
+                        <div class="form-field">
+                            <label for="email">Email Address</label>
+                            <input id="email" type="email" th:field="*{email}" autocomplete="email" required>
+                            <p class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</p>
+                        </div>
+                        <div class="form-field">
+                            <label for="password">Password</label>
+                            <input id="password" type="password" th:field="*{password}" autocomplete="new-password" required>
+                            <p class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password error</p>
+                        </div>
+                        <div class="form-field">
+                            <label for="idNumber">Student ID Number</label>
+                            <input id="idNumber" type="text" th:field="*{idNumber}" autocomplete="off" required>
+                            <p class="field-error" th:if="${#fields.hasErrors('idNumber')}" th:errors="*{idNumber}">ID error</p>
+                        </div>
+                        <div class="action-group">
+                            <button class="primary-button" type="submit">Submit Registration</button>
+                            <a class="secondary-button" th:href="@{/login}" href="/login">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+
+                <aside class="info-panel">
+                    <div class="section-heading">
+                        <h2>Approval Workflow</h2>
+                        <p>Your registration request is reviewed by an administrator before student booking features are enabled.</p>
+                    </div>
+                    <ul class="info-list">
+                        <li>Provide your full name, institutional email, and student ID number.</li>
+                        <li>Use a password with at least six characters.</li>
+                        <li>After approval, you can sign in and begin booking tutoring sessions.</li>
+                    </ul>
+                </aside>
+            </section>
+        </div>
+    </main>
+    <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>

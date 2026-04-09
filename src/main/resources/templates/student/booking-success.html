@@ -9,24 +9,30 @@
 <body>
     <div th:replace="~{fragments/header :: siteHeader}"></div>
     <main class="page-main">
-        <div class="container">
-            <section class="page-shell">
+        <div class="container page-container">
+            <section class="page-card">
                 <header class="page-header">
+                    <p class="eyebrow">Student Services</p>
                     <h1>Booking Confirmed</h1>
-                    <p>Your tutoring session has been recorded successfully.</p>
+                    <p>Your tutoring session has been recorded successfully. Keep this page as a confirmation checkpoint before returning to other portal tasks.</p>
                 </header>
 
-                <section class="confirmation-card">
-                    <h2>Confirmation Details</h2>
-                    <p class="flash-message flash-success" th:if="${successMessage}" th:text="${successMessage}">Booking successful</p>
-                    <p th:if="${sessionId}">
-                        Session ID:
-                        <strong th:text="${sessionId}">1</strong>
-                    </p>
-                    <div class="button-row">
-                        <a class="button" th:href="@{/student/book}" href="/student/book">Book Another Session</a>
-                        <a class="button button-secondary" th:href="@{/}" href="/">Return Home</a>
-                    </div>
+                <section class="confirmation-layout">
+                    <article class="confirmation-card">
+                        <div class="section-heading">
+                            <h2>Session Confirmation</h2>
+                            <p>The booking workflow has been completed and the session is now part of the tutoring schedule.</p>
+                        </div>
+                        <p class="flash-message flash-success" th:if="${successMessage}" th:text="${successMessage}">Booking successful</p>
+                        <p class="confirmation-id" th:if="${sessionId}">
+                            <span>Session ID</span>
+                            <strong th:text="${sessionId}">1</strong>
+                        </p>
+                        <div class="action-group">
+                            <a class="primary-button" th:href="@{/student/book}" href="/student/book">Return to Booking</a>
+                            <a class="secondary-button" th:href="@{/student/schedule}" href="/student/schedule">View My Schedule</a>
+                        </div>
+                    </article>
                 </section>
             </section>
         </div>
