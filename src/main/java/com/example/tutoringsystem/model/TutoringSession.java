@@ -34,8 +34,8 @@ public class TutoringSession {
     @Enumerated(EnumType.STRING)
     private SessionStatus status;
 
-    @OneToOne
-    private SessionSlot slot;
+    @ManyToOne
+    private SessionSlot slot; 
 
     public TutoringSession() {
     }

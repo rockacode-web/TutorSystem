@@ -37,7 +37,7 @@ public class ScheduleService {
     }
 
     public List<TutoringSession> getSessionsByTutor(Long tutorId) {
-        return tutoringSessionRepository.findByTutorId(tutorId);
+    return tutoringSessionRepository.findByTutorIdOrderByDateAscStartTimeAsc(tutorId);
     }
 
     public SessionSlot createSessionSlot(Long tutorId, LocalDate date, LocalTime startTime, LocalTime endTime) {
@@ -78,7 +78,7 @@ public class ScheduleService {
         logger.info("cancelSession save completed: sessionId={}", sessionId);
 
         // Send cancellation email with reason
-        emailService.sendCancellationNotice(savedSession, "Tutor", cancelReason);
+        emailService.notifySessionCancelledWithReason(savedSession, "Tutor", cancelReason);
 
         return savedSession;
     }

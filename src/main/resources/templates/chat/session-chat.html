@@ -14,7 +14,7 @@
                 <header class="page-header">
                     <p class="eyebrow">Session Communication</p>
                     <h1 th:text="${pageTitle}">Session Chat</h1>
-                    <p th:text="${'Chat for session #' + session.id + ' between ' + session.student.name + ' and ' + session.tutor.name + '.'}">Chat details</p>
+                    <p th:text="${'Chat for session #' + chatSession.id + ' between ' + chatSession.student.name + ' and ' + chatSession.tutor.name + '.'}">Chat details</p>
                 </header>
 
                 <section class="flash-messages" th:if="${errorMessage != null}">
@@ -24,19 +24,19 @@
                 <section class="info-panel session-summary-grid">
                     <div>
                         <span class="field-label">Student</span>
-                        <p th:text="${session.student.name}">Student</p>
+                        <p th:text="${chatSession.student.name}">Student</p>
                     </div>
                     <div>
                         <span class="field-label">Tutor</span>
-                        <p th:text="${session.tutor.name}">Tutor</p>
+                        <p th:text="${chatSession.tutor.name}">Tutor</p>
                     </div>
                     <div>
                         <span class="field-label">Date</span>
-                        <p th:text="${session.date}">Date</p>
+                        <p th:text="${chatSession.date}">Date</p>
                     </div>
                     <div>
                         <span class="field-label">Time</span>
-                        <p th:text="${session.startTime + ' - ' + session.endTime}">Time</p>
+                        <p th:text="${chatSession.startTime + ' - ' + chatSession.endTime}">Time</p>
                     </div>
                 </section>
 

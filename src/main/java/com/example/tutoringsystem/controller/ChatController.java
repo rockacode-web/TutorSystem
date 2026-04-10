@@ -93,7 +93,7 @@ public class ChatController {
             String returnUrl,
             String pageTitle) {
         model.addAttribute("pageTitle", pageTitle);
-        model.addAttribute("session", session);
+        model.addAttribute("chatSession", session);
         model.addAttribute("messages", chatService.getMessages(session.getId()));
         model.addAttribute("postUrl", postUrl);
         model.addAttribute("returnUrl", returnUrl);
