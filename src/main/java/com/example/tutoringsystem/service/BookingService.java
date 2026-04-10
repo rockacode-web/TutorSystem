@@ -30,8 +30,21 @@ public class BookingService {
         this.emailService = emailService;
     }
 
+    public List<TutoringSession> getStudentSessions(Long studentId) {
+        return tutoringSessionRepository.findByStudentId(studentId);
+    }
+
+    public void cancelStudentSession(Long sessionId, Long studentId) {
+        TutoringSession session = tutoringSessionRepository.findById(sessionId)
+            .orElseThrow(() -> new RuntimeException("Session not found"));
+        if (!session.getStudent().getId().equals(studentId))
+            throw new RuntimeException("Unauthorized");
+        session.setStatus(SessionStatus.CANCELLED);
+        tutoringSessionRepository.save(session);
+    }
+
     public List<SessionSlot> getAvailableSlots() {
-        return sessionSlotRepository.findByAvailableTrue();
+        return sessionSlotRepository.findByAvailableTrueOrderByDateAscStartTimeAsc();
     }
 
     public TutoringSession bookSession(Long studentId, Long slotId) {
@@ -59,8 +72,7 @@ public class BookingService {
         sessionSlotRepository.save(slot);
 
         // Send booking confirmation email
-        emailService.sendBookingConfirmation(savedSession);
-
+        emailService.notifyBookingConfirmed(savedSession);
         return savedSession;
     }
 }
