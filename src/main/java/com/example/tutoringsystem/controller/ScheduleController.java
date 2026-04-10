@@ -62,16 +62,11 @@ public class ScheduleController {
 
             scheduleService.createSessionSlot(tutorId, parsedDate, parsedStartTime, parsedEndTime);
             logger.info("Schedule slot creation succeeded: tutorId={}", tutorId);
-            redirectAttributes.addFlashAttribute("successMessage",
-                    "New available slot added successfully.");
+            redirectAttributes.addFlashAttribute("successMessage", "New available slot added successfully.");
         } catch (DateTimeParseException exception) {
-            logger.warn("Schedule slot creation failed: tutorId={}, error={}", tutorId, exception.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage",
-                    "Unable to add slot: invalid date or time value.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Unable to add slot: invalid date or time value.");
         } catch (RuntimeException exception) {
-            logger.warn("Schedule slot creation failed: tutorId={}, error={}", tutorId, exception.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage",
-                    "Unable to add slot: " + exception.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Unable to add slot: " + exception.getMessage());
         }
         return "redirect:/tutor/schedule";
     }
@@ -106,13 +101,9 @@ public class ScheduleController {
             redirectAttributes.addFlashAttribute("successMessage",
                     "Tutoring session updated successfully for session id " + sessionId + ".");
         } catch (DateTimeParseException exception) {
-            logger.warn("Schedule update failed: sessionId={}, tutorId={}, error={}", sessionId, tutorId,
-                    exception.getMessage());
             redirectAttributes.addFlashAttribute("errorMessage",
                     "Unable to update session id " + sessionId + ": invalid date or time value.");
         } catch (RuntimeException exception) {
-            logger.warn("Schedule update failed: sessionId={}, tutorId={}, error={}", sessionId, tutorId,
-                    exception.getMessage());
             redirectAttributes.addFlashAttribute("errorMessage",
                     "Unable to update session id " + sessionId + ": " + exception.getMessage());
         }
@@ -120,21 +111,32 @@ public class ScheduleController {
     }
 
     @PostMapping("/tutor/schedule/cancel")
-    public String cancelSession(@AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam Long sessionId,
+    public String cancelSession(@RequestParam Long sessionId,
+            @RequestParam Long tutorId,
+            @RequestParam String cancelReason,
+            @RequestParam(required = false) String otherReason,
             RedirectAttributes redirectAttributes) {
-        Tutor tutor = portalIdentityService.getTutorByUsername(userDetails.getUsername());
-        Long tutorId = tutor.getId();
-        logger.info("Schedule cancel requested: sessionId={}, tutorId={}", sessionId, tutorId);
+        logger.info("Schedule cancel requested: sessionId={}, tutorId={}, cancelReason={}",
+                sessionId, tutorId, cancelReason);
+
+        // Reason for cancellation
+        String finalReason;
+        if ("Other".equals(cancelReason)) {
+            if (otherReason == null || otherReason.isBlank()) {
+                redirectAttributes.addFlashAttribute("errorMessage",
+                        "Please provide a reason when selecting 'Other'.");
+                return "redirect:/tutor/schedule?tutorId=" + tutorId;
+            }
+            finalReason = otherReason;
+        } else {
+            finalReason = "No longer available";
+        }
 
         try {
-            scheduleService.cancelSession(sessionId, tutorId);
-            logger.info("Schedule cancel succeeded: sessionId={}, tutorId={}", sessionId, tutorId);
+            scheduleService.cancelSession(sessionId, finalReason);
             redirectAttributes.addFlashAttribute("successMessage",
                     "Tutoring session cancelled successfully for session id " + sessionId + ".");
         } catch (RuntimeException exception) {
-            logger.warn("Schedule cancel failed: sessionId={}, tutorId={}, error={}", sessionId, tutorId,
-                    exception.getMessage());
             redirectAttributes.addFlashAttribute("errorMessage",
                     "Unable to cancel session id " + sessionId + ": " + exception.getMessage());
         }

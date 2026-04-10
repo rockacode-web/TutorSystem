@@ -21,15 +21,16 @@ public class BookingService {
     private final SessionSlotRepository sessionSlotRepository;
     private final StudentRepository studentRepository;
     private final TutoringSessionRepository tutoringSessionRepository;
-    private final NotificationService notificationService;
+    private final NotificationService emailService;
 
-    public BookingService(SessionSlotRepository sessionSlotRepository, StudentRepository studentRepository,
+    public BookingService(SessionSlotRepository sessionSlotRepository,
+            StudentRepository studentRepository,
             TutoringSessionRepository tutoringSessionRepository,
-            NotificationService notificationService) {
+            NotificationService emailService) {
         this.sessionSlotRepository = sessionSlotRepository;
         this.studentRepository = studentRepository;
         this.tutoringSessionRepository = tutoringSessionRepository;
-        this.notificationService = notificationService;
+        this.emailService = emailService;
     }
 
     public List<SessionSlot> getAvailableSlots() {
@@ -64,6 +65,7 @@ public class BookingService {
         tutoringSession.setSlot(slot);
 
         TutoringSession savedSession = tutoringSessionRepository.save(tutoringSession);
+
         slot.setAvailable(false);
         sessionSlotRepository.save(slot);
         notificationService.notifyBookingConfirmed(savedSession);
@@ -82,36 +84,9 @@ public class BookingService {
             throw new RuntimeException("You can only cancel sessions booked on your own account.");
         }
 
-        if (session.getStatus() != SessionStatus.BOOKED) {
-            throw new RuntimeException("Only active booked sessions can be cancelled.");
-        }
+        // Send booking confirmation email
+        emailService.sendBookingConfirmation(savedSession);
 
-        session.setStatus(SessionStatus.CANCELLED);
-        reopenLinkedSlot(session);
-        TutoringSession savedSession = tutoringSessionRepository.save(session);
-        notificationService.notifySessionCancelled(savedSession, student.getName());
         return savedSession;
-    }
-
-    private void validateStudentConflict(Long studentId, LocalDate date, LocalTime startTime, LocalTime endTime) {
-        boolean conflictExists = tutoringSessionRepository.findByStudentIdOrderByDateAscStartTimeAsc(studentId).stream()
-                .filter(session -> session.getStatus() == SessionStatus.BOOKED)
-                .filter(session -> session.getDate().equals(date))
-                .anyMatch(session -> overlaps(startTime, endTime, session.getStartTime(), session.getEndTime()));
-
-        if (conflictExists) {
-            throw new RuntimeException("You already have a booked session that overlaps with that time.");
-        }
-    }
-
-    private void reopenLinkedSlot(TutoringSession session) {
-        if (session.getSlot() != null) {
-            session.getSlot().setAvailable(true);
-            sessionSlotRepository.save(session.getSlot());
-        }
-    }
-
-    private boolean overlaps(LocalTime startTimeA, LocalTime endTimeA, LocalTime startTimeB, LocalTime endTimeB) {
-        return startTimeA.isBefore(endTimeB) && endTimeA.isAfter(startTimeB);
     }
 }

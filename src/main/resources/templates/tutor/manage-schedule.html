@@ -161,14 +161,35 @@
                                             </div>
                                         </form>
 
-                                        <form th:if="${tutoringSession.status.name() != 'CANCELLED'}"
-                                              class="table-action-form"
-                                              th:action="@{/tutor/schedule/cancel}" action="/tutor/schedule/cancel" method="post"
-                                              onsubmit="return confirm('Cancel this tutoring session?');">
-                                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                            <input type="hidden" name="sessionId" th:value="${tutoringSession.id}" />
-                                            <button class="danger-button" type="submit">Cancel Session</button>
-                                        </form>
+                                    <!-- Cancel form with reason dropdown -->
+                                    <form th:if="${tutoringSession.status.name() != 'CANCELLED'}"
+                                          th:action="@{/tutor/schedule/cancel}" action="/tutor/schedule/cancel" method="post">
+                                        <input type="hidden" name="sessionId" th:value="${tutoringSession.id}" />
+                                        <input type="hidden" name="tutorId" th:value="${tutorId}" />
+
+                                        <label>
+                                            Reason for Cancellation
+                                            <select name="cancelReason"
+                                                    th:id="'cancelReason-' + ${tutoringSession.id}"
+                                                    onchange="toggleOtherReason(this, 'otherReasonBox-' + this.dataset.sessionid)"
+                                                    th:data-sessionid="${tutoringSession.id}">
+                                                <option value="No longer available">No longer available</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </label>
+
+                                        <div th:id="'otherReasonBox-' + ${tutoringSession.id}" style="display:none; margin-top:8px;">
+                                            <label>
+                                                Please describe the reason
+                                                <textarea name="otherReason"
+                                                          rows="3"
+                                                          placeholder="Enter your reason here..."
+                                                          style="width:100%;"></textarea>
+                                            </label>
+                                        </div>
+
+                                        <button class="button-secondary" type="submit">Cancel Session</button>
+                                    </form>
 
                                         <a th:if="${tutoringSession.status.name() == 'BOOKED'}"
                                            class="secondary-button"
@@ -187,5 +208,16 @@
         </div>
     </main>
     <div th:replace="~{fragments/footer :: siteFooter}"></div>
+
+    <script>
+        function toggleOtherReason(selectEl, boxId) {
+            const box = document.getElementById(boxId);
+            if (selectEl.value === 'Other') {
+                box.style.display = 'block';
+            } else {
+                box.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>

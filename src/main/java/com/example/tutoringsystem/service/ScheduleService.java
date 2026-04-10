@@ -25,16 +25,16 @@ public class ScheduleService {
     private final TutoringSessionRepository tutoringSessionRepository;
     private final SessionSlotRepository sessionSlotRepository;
     private final TutorRepository tutorRepository;
-    private final NotificationService notificationService;
+    private final NotificationService emailService;
 
     public ScheduleService(TutoringSessionRepository tutoringSessionRepository,
             SessionSlotRepository sessionSlotRepository,
             TutorRepository tutorRepository,
-            NotificationService notificationService) {
+            NotificationService emailService) {
         this.tutoringSessionRepository = tutoringSessionRepository;
         this.sessionSlotRepository = sessionSlotRepository;
         this.tutorRepository = tutorRepository;
-        this.notificationService = notificationService;
+        this.emailService = emailService;
     }
 
     public List<TutoringSession> getSessionsByTutor(Long tutorId) {
@@ -71,6 +71,18 @@ public class ScheduleService {
         return savedSlot;
     }
 
+    public TutoringSession cancelSession(Long sessionId, String cancelReason) {
+        logger.info("cancelSession entered: sessionId={}", sessionId);
+
+        TutoringSession tutoringSession = tutoringSessionRepository.findById(sessionId)
+                .orElseThrow(() -> {
+                    logger.warn("cancelSession session not found: sessionId={}", sessionId);
+                    return new RuntimeException("Tutoring session not found with id: " + sessionId);
+                });
+
+        logger.info("cancelSession session found: sessionId={}, oldStatus={}", sessionId, tutoringSession.getStatus());
+        tutoringSession.setStatus(SessionStatus.CANCELLED);
+
     // MVP state rule: BOOKED -> CANCELLED is allowed, and cancelled sessions remain visible for history.
     @Transactional
     public TutoringSession cancelSession(Long sessionId, Long tutorId) {
@@ -88,18 +100,28 @@ public class ScheduleService {
         TutoringSession savedSession = tutoringSessionRepository.save(tutoringSession);
         notificationService.notifySessionCancelled(savedSession, savedSession.getTutor().getName());
         logger.info("cancelSession save completed: sessionId={}", sessionId);
+
+        // Send cancellation email with reason
+        emailService.sendCancellationNotice(savedSession, "Tutor", cancelReason);
+
         return savedSession;
     }
 
+    public TutoringSession updateSession(Long sessionId, LocalDate newDate, LocalTime newStartTime,
+            LocalTime newEndTime) {
+        logger.info("updateSession entered: sessionId={}", sessionId);
+
+        TutoringSession tutoringSession = tutoringSessionRepository.findById(sessionId)
+                .orElseThrow(() -> {
+                    logger.warn("updateSession session not found: sessionId={}", sessionId);
+                    return new RuntimeException("Tutoring session not found with id: " + sessionId);
+                });
     // MVP state rule: CANCELLED sessions cannot have date/time updated; a future flow can handle reschedule/reactivate.
     @Transactional
     public TutoringSession updateSession(Long sessionId, Long tutorId, LocalDate newDate, LocalTime newStartTime,
             LocalTime newEndTime) {
         logger.info("updateSession entered: sessionId={}, tutorId={}", sessionId, tutorId);
         TutoringSession tutoringSession = getTutorSession(sessionId, tutorId, "updateSession");
-
-        logger.info("updateSession session found: sessionId={}, oldDate={}, oldStartTime={}, oldEndTime={}",
-                sessionId, tutoringSession.getDate(), tutoringSession.getStartTime(), tutoringSession.getEndTime());
 
         if (tutoringSession.getStatus() == SessionStatus.CANCELLED) {
             logger.warn("updateSession blocked for cancelled session: sessionId={}", sessionId);
