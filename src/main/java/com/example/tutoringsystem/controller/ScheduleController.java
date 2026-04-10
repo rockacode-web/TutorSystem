@@ -3,12 +3,9 @@ package com.example.tutoringsystem.controller;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.tutoringsystem.model.Tutor;
-import com.example.tutoringsystem.model.TutoringSession;
-import com.example.tutoringsystem.service.PortalIdentityService;
 import com.example.tutoringsystem.service.ScheduleService;
 
 @Controller
@@ -27,31 +21,24 @@ public class ScheduleController {
     private static final Logger logger = LoggerFactory.getLogger(ScheduleController.class);
 
     private final ScheduleService scheduleService;
-    private final PortalIdentityService portalIdentityService;
 
-    public ScheduleController(ScheduleService scheduleService, PortalIdentityService portalIdentityService) {
+    public ScheduleController(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
-        this.portalIdentityService = portalIdentityService;
     }
 
     @GetMapping("/tutor/schedule")
-    public String showTutorSchedule(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        Tutor tutor = portalIdentityService.getTutorByUsername(userDetails.getUsername());
-        List<TutoringSession> sessions = scheduleService.getSessionsByTutor(tutor.getId());
-        model.addAttribute("sessions", sessions);
-        model.addAttribute("slots", scheduleService.getSlotsByTutor(tutor.getId()));
-        model.addAttribute("tutor", tutor);
+    public String showTutorSchedule(@RequestParam Long tutorId, Model model) {
+        model.addAttribute("sessions", scheduleService.getSessionsByTutor(tutorId));
+        model.addAttribute("tutorId", tutorId);
         return "tutor/manage-schedule";
     }
 
     @PostMapping("/tutor/slot/create")
-    public String createSessionSlot(@AuthenticationPrincipal UserDetails userDetails,
+    public String createSessionSlot(@RequestParam Long tutorId,
             @RequestParam String date,
             @RequestParam String startTime,
             @RequestParam String endTime,
             RedirectAttributes redirectAttributes) {
-        Tutor tutor = portalIdentityService.getTutorByUsername(userDetails.getUsername());
-        Long tutorId = tutor.getId();
         logger.info("Schedule slot creation requested: tutorId={}, date={}, startTime={}, endTime={}",
                 tutorId, date, startTime, endTime);
 
@@ -68,27 +55,22 @@ public class ScheduleController {
         } catch (RuntimeException exception) {
             redirectAttributes.addFlashAttribute("errorMessage", "Unable to add slot: " + exception.getMessage());
         }
-        return "redirect:/tutor/schedule";
+        return "redirect:/tutor/schedule?tutorId=" + tutorId;
     }
 
     @PostMapping("/tutor/schedule/update")
-    public String updateSession(@AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam Long sessionId,
+    public String updateSession(@RequestParam Long sessionId,
             @RequestParam(required = false) String newDate,
             @RequestParam(required = false) String newStartTime,
             @RequestParam(required = false) String newEndTime,
+            @RequestParam Long tutorId,
             RedirectAttributes redirectAttributes) {
-        Tutor tutor = portalIdentityService.getTutorByUsername(userDetails.getUsername());
-        Long tutorId = tutor.getId();
-        logger.info("Schedule update requested: sessionId={}, tutorId={}, newDate={}, newStartTime={}, newEndTime={}",
-                sessionId, tutorId, newDate, newStartTime, newEndTime);
 
         if (newDate == null || newDate.isBlank() || newStartTime == null || newStartTime.isBlank()
                 || newEndTime == null || newEndTime.isBlank()) {
-            String message = "Missing required date or time values for session update.";
-            logger.warn("Schedule update failed: sessionId={}, tutorId={}, reason={}", sessionId, tutorId, message);
-            redirectAttributes.addFlashAttribute("errorMessage", message);
-            return "redirect:/tutor/schedule";
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Missing required date or time values for session update.");
+            return "redirect:/tutor/schedule?tutorId=" + tutorId;
         }
 
         try {
@@ -96,8 +78,7 @@ public class ScheduleController {
             LocalTime parsedStartTime = LocalTime.parse(newStartTime);
             LocalTime parsedEndTime = LocalTime.parse(newEndTime);
 
-            scheduleService.updateSession(sessionId, tutorId, parsedDate, parsedStartTime, parsedEndTime);
-            logger.info("Schedule update succeeded: sessionId={}, tutorId={}", sessionId, tutorId);
+            scheduleService.updateSession(sessionId, parsedDate, parsedStartTime, parsedEndTime);
             redirectAttributes.addFlashAttribute("successMessage",
                     "Tutoring session updated successfully for session id " + sessionId + ".");
         } catch (DateTimeParseException exception) {
@@ -107,7 +88,7 @@ public class ScheduleController {
             redirectAttributes.addFlashAttribute("errorMessage",
                     "Unable to update session id " + sessionId + ": " + exception.getMessage());
         }
-        return "redirect:/tutor/schedule";
+        return "redirect:/tutor/schedule?tutorId=" + tutorId;
     }
 
     @PostMapping("/tutor/schedule/cancel")
@@ -140,6 +121,6 @@ public class ScheduleController {
             redirectAttributes.addFlashAttribute("errorMessage",
                     "Unable to cancel session id " + sessionId + ": " + exception.getMessage());
         }
-        return "redirect:/tutor/schedule";
+        return "redirect:/tutor/schedule?tutorId=" + tutorId;
     }
 }
