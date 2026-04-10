@@ -30,17 +30,20 @@ public class AdminService {
     private final AdminRepository adminRepository;
     private final TutoringSessionRepository tutoringSessionRepository;
     private final SessionSlotRepository sessionSlotRepository;
+    private final NotificationService notificationService;
 
     public AdminService(StudentRepository studentRepository,
             TutorRepository tutorRepository,
             AdminRepository adminRepository,
             TutoringSessionRepository tutoringSessionRepository,
-            SessionSlotRepository sessionSlotRepository) {
+            SessionSlotRepository sessionSlotRepository,
+            NotificationService notificationService) {
         this.studentRepository = studentRepository;
         this.tutorRepository = tutorRepository;
         this.adminRepository = adminRepository;
         this.tutoringSessionRepository = tutoringSessionRepository;
         this.sessionSlotRepository = sessionSlotRepository;
+        this.notificationService = notificationService;
     }
 
     public List<Student> getPendingStudents() {
@@ -149,6 +152,7 @@ public class AdminService {
         student.setApprovalStatus(ApprovalStatus.APPROVED);
         student.setActive(true);
         studentRepository.save(student);
+        notificationService.notifyAccountApproved(student);
     }
 
     @Transactional
@@ -157,6 +161,7 @@ public class AdminService {
                 .orElseThrow(() -> new RuntimeException("Student account not found."));
         student.setApprovalStatus(ApprovalStatus.REJECTED);
         studentRepository.save(student);
+        notificationService.notifyAccountRejected(student);
     }
 
     @Transactional

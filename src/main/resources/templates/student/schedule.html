@@ -53,23 +53,23 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="session : ${upcomingSessions}">
+                            <tr th:each="appt : ${upcomingSessions}">
                                 <td>
                                     <div class="session-meta">
-                                        <strong th:text="${session.tutor.name}">Tutor Name</strong>
-                                        <span class="muted-note" th:text="${session.tutor.subject}">Subject</span>
+                                        <strong th:text="${appt.tutor.name}">Tutor Name</strong>
+                                        <span class="muted-note" th:text="${appt.tutor.subject}">Subject</span>
                                     </div>
                                 </td>
-                                <td th:text="${session.date}">Date</td>
-                                <td th:text="${session.startTime}">Start Time</td>
-                                <td th:text="${session.endTime}">End Time</td>
+                                <td th:text="${appt.date}">Date</td>
+                                <td th:text="${appt.startTime}">Start Time</td>
+                                <td th:text="${appt.endTime}">End Time</td>
                                 <td>
-                                    <span class="status-badge status-booked" th:text="${session.status}">BOOKED</span>
+                                    <span class="status-badge status-booked" th:text="${appt.status}">BOOKED</span>
                                 </td>
                                 <td class="table-action-cell">
                                     <div class="session-actions">
                                         <a class="secondary-button"
-                                           th:href="@{'/student/chat/' + ${session.id}}"
+                                           th:href="@{'/student/chat/' + ${appt.id}}"
                                            href="/student/chat/1">Open Chat</a>
                                         <form class="table-action-form"
                                               th:action="@{/student/session/cancel}"
@@ -77,7 +77,7 @@
                                               method="post"
                                               onsubmit="return confirm('Cancel this tutoring session?');">
                                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                            <input type="hidden" name="sessionId" th:value="${session.id}">
+                                            <input type="hidden" name="sessionId" th:value="${appt.id}">
                                             <button class="danger-button" type="submit">Cancel Session</button>
                                         </form>
                                     </div>
@@ -114,12 +114,12 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="session : ${cancelledSessions}" class="row-cancelled">
-                                <td th:text="${session.tutor.name}">Tutor Name</td>
-                                <td th:text="${session.date}">Date</td>
-                                <td th:text="${session.startTime}">Start Time</td>
-                                <td th:text="${session.endTime}">End Time</td>
-                                <td><span class="status-badge status-cancelled" th:text="${session.status}">CANCELLED</span></td>
+                            <tr th:each="appt : ${cancelledSessions}" class="row-cancelled">
+                                <td th:text="${appt.tutor.name}">Tutor Name</td>
+                                <td th:text="${appt.date}">Date</td>
+                                <td th:text="${appt.startTime}">Start Time</td>
+                                <td th:text="${appt.endTime}">End Time</td>
+                                <td><span class="status-badge status-cancelled" th:text="${appt.status}">CANCELLED</span></td>
                             </tr>
                             </tbody>
                         </table>

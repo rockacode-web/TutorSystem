@@ -148,6 +148,36 @@ public class NotificationService {
                 UserRole.STUDENT, message, LocalDateTime.now()));
     }
 
+    public void notifyAccountApproved(Student student) {
+    String subject = "Your Tutoring Portal Account Has Been Approved";
+    String message = "Your student account has been approved. You can now sign in to the Academic Tutoring Portal.";
+    String htmlBody = "<h2>Account Approved!</h2>"
+            + "<p>Dear <b>" + student.getName() + "</b>,</p>"
+            + "<p>" + message + "</p>"
+            + "<br><a href='http://localhost:8080/login' "
+            + "style='background:#1a3a5c;color:white;padding:10px 20px;text-decoration:none;border-radius:4px;'>"
+            + "Sign In Now</a>"
+            + "<br><br><p>The TutoringSystem Team</p>";
+    sendEmail(student.getEmail(), subject, htmlBody);
+    notificationRecordRepository.save(new NotificationRecord(
+            null, student.getName(), student.getEmail(),
+            UserRole.STUDENT, message, LocalDateTime.now()));
+    }
+
+    public void notifyAccountRejected(Student student) {
+        String subject = "Your Tutoring Portal Account Application";
+        String message = "Unfortunately, your student account application has not been approved at this time. "
+            + "If you believe this is an error, please contact the portal administrator.";
+        String htmlBody = "<h2>Account Application Update</h2>"
+            + "<p>Dear <b>" + student.getName() + "</b>,</p>"
+            + "<p>" + message + "</p>"
+            + "<br><p>The TutoringSystem Team</p>";
+        sendEmail(student.getEmail(), subject, htmlBody);
+        notificationRecordRepository.save(new NotificationRecord(
+            null, student.getName(), student.getEmail(),
+            UserRole.STUDENT, message, LocalDateTime.now()));
+}
+
     private void sendEmail(String to, String subject, String htmlBody) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -155,7 +185,7 @@ public class NotificationService {
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(htmlBody, true);
-            helper.setFrom("your-email@gmail.com");
+            helper.setFrom("test.acc51432@gmail.com");
             mailSender.send(message);
             logger.info("Email sent successfully to: {}", to);
         } catch (Exception e) {

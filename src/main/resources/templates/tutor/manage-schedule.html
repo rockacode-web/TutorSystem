@@ -165,7 +165,6 @@
                                     <form th:if="${tutoringSession.status.name() != 'CANCELLED'}"
                                           th:action="@{/tutor/schedule/cancel}" action="/tutor/schedule/cancel" method="post">
                                         <input type="hidden" name="sessionId" th:value="${tutoringSession.id}" />
-                                        <input type="hidden" name="tutorId" th:value="${tutorId}" />
 
                                         <label>
                                             Reason for Cancellation
